@@ -1,3 +1,31 @@
+def SendSlackNotifications(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus =  buildStatus ?: 'SUCCESSFUL'
+
+  // Default values
+  def colorName = 'RED'
+  def colorCode = '#FF0000'
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def summary = "${subject} (${env.BUILD_URL})"
+
+  // Override default values based on build status
+  if (buildStatus == 'STARTED') {
+    color = 'YELLOW'
+    colorCode = '#FFFF00'
+  } else if (buildStatus == 'SUCCESSFUL') {
+    color = 'GREEN'
+    colorCode = '#00FF00'
+  } else {
+    color = 'RED'
+    colorCode = '#FF0000'
+  }
+
+  // Send notifications
+  slackSend (color: colorCode, message: summary)
+}
+
+
+
 node{
     
 def mavenHome = tool name: "maven3.8.5"
@@ -16,6 +44,8 @@ stage('CheckoutCode'){
 buildName 'Dev - ${env.BUILD_NUMBER}'
 git branch: 'development', credentialsId: 'e2a8b6a6-a4ff-4083-9c74-f910f4d976d2', url: 'https://github.com/mss-devops-jan/maven-web-application.git'
 }
+
+try{
 
 //Build Stage
 stage('build'){
@@ -40,5 +70,12 @@ sshagent(['1665c923-a138-4429-865a-2312abe04ce9']) {
 }
 }
 */
+}//tryblock closing
+catch(e){
+currentbuild.result = "FAILED"
+}
+finally{
+SendSlackNotifications(currentbuild.result)
+}
 
 }//Node Closing
