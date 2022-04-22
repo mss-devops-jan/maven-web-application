@@ -8,6 +8,8 @@ echo "The Node name is : ${env.NODE_NAME} "
 echo "The Job name is : ${env.JOB_NAME} "
 echo "The Build Number is : ${env.BUILD_NUMBER} "
 
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
+
 //checkoutstage 
 stage('CheckOutCode'){
   git branch: 'development', credentialsId: '90b820fe-245b-41b6-addc-821eae9701fb', url: 'https://github.com/mss-devops-jan/maven-web-application.git'
