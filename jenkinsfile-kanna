@@ -19,7 +19,7 @@ stage('CheckOutCode'){
 stage('Build'){
 sh "$mavenHome/bin/mvn clean package"
 }
-
+/*
 //Generating the sonarqube report
 stage(' SonarqubeReport' ){
 sh "$mavenHome/bin/mvn sonar:sonar" 
@@ -37,6 +37,6 @@ sshagent(['9936b36a-acf7-4473-851e-41e48362f259']) {
 
 }
 }
-
+*\
 }//node closing
 
